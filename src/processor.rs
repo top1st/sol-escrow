@@ -55,6 +55,7 @@ impl Processor {
         }
 
         let escrow_account = next_account_info(account_info_iter)?;
+
         let rent = &Rent::from_account_info(next_account_info(account_info_iter)?)?;
 
         if !rent.is_exempt(escrow_account.lamports(), escrow_account.data_len()) {
@@ -137,7 +138,7 @@ impl Processor {
             return Err(ProgramError::InvalidAccountData);
         }
 
-        if escrow_info.initializer_token_to_receive_account_pubkey != *initializers_token_to_receive_account {
+        if escrow_info.initializer_token_to_receive_account_pubkey != *initializers_token_to_receive_account.key {
             return Err(ProgramError::InvalidAccountData);
         }
 
@@ -148,7 +149,7 @@ impl Processor {
             takers_sending_token_account.key,
             initializers_token_to_receive_account.key,
             taker.key,
-            *[&taker.key],
+            &[&taker.key],
             escrow_info.expected_amount,
         )?;
         msg!("Calling the token program to transfer tokens to the escrow's initializer...");
